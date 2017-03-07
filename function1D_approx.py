@@ -42,7 +42,7 @@ class NN(chainer.Chain):
             function_h+=l(h[:,1:2])*F.exp(-90*pow(t-two_reals_to_vector(h),2))
             
             
-        loss=F.mean_absolute_error(function_h,function_x)
+        loss=F.mean_squared_error(function_h,function_x)
         reporter.report({'loss': loss}, self)
         self.reset_state()
         return loss
