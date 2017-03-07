@@ -9,16 +9,16 @@ import chainer.links as L
 import matplotlib.pyplot as plt
 
 n_epoch = 10
-batchsize = 10   
+batchsize = 100   
 
 class NN(chainer.Chain):
     def __init__(self, input_n, output_n):
         super(NN, self).__init__(
-            l1=L.Linear(input_n, output_n),
+            l=L.Linear(input_n, output_n),
         )
 
-    def __call__(self,x,y):
-        h=self.l1(x)
+    def __call__(self,x):
+        h=F.sigmoid(self.l(x))
         
         real_to_vector=L.Linear(1,100,initialW=np.ones((100,1)))
         t=Variable((np.ones((len(x),100))*np.linspace(0,1,num=100)).astype(np.float32))
@@ -32,17 +32,16 @@ class NN(chainer.Chain):
         return loss
 
     def forward(self,x):
-	h = self.l1(x)
+	h = F.sigmoid(self.l(x))
         return h
 
 model=NN(1,1)
 optimizer = optimizers.Adam(alpha=0.001)
 optimizer.setup(model)
 
-Xtr=np.random.rand(5000,1).astype(np.float32)
-train = zip(Xtr,Xtr)
+Xtr=np.random.rand(50000,1).astype(np.float32)
 
-train_iter = iterators.SerialIterator(train, batch_size=batchsize, shuffle=True)
+train_iter = iterators.SerialIterator(Xtr, batch_size=batchsize, shuffle=True)
 updater = chainer.training.StandardUpdater(train_iter, optimizer)
 trainer = chainer.training.Trainer(updater, (n_epoch, 'epoch'), out='result')
 
